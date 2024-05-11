@@ -64,18 +64,8 @@ class View:
 
             else:
                 # print("Computer's turn...")
-                print("It's 2 turn!")
-                valid_moves = self.game.getAllValidMoves(self.board, 1)
-                print("please choose one from your valid moves: ", valid_moves)
-                while True:
-                    row = int(input("Enter row number: "))
-                    col = int(input("Enter column number: "))
-                    if [row, col] in valid_moves:
-                        player_choice.append(row)
-                        player_choice.append(col)
-                        break
-                    else:
-                        print("invalid move, Enter new one ")
+                print("It's Computer's turn!")
+                
             self.board.make_move(player_choice[0], player_choice[1], player)
             self.game.updateBoard(player, self.board, player_choice)
 
