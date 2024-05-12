@@ -162,68 +162,45 @@ class GameController:
             else:
                 break
 
-    def alpha_beta_pruning(self, board, player, depth, alpha, beta):
-        best_score = float('-inf') if player == 1 else float('inf')
-        best_move = None
-
-        valid_moves = self.getAllValidMoves(board, player)
-
-        for move in valid_moves:
-            new_board = Board()
-            new_board.GameBoard = [row[:] for row in board.GameBoard]  # Copy the game board
-            new_board.make_move(move[0], move[1], player)
-            score = self.minimax(new_board, player, depth - 1, alpha, beta, False)
-
-            if player == 1:
-                if score > best_score:
-                    best_score = score
-                    best_move = move
-                alpha = max(alpha, best_score)
-            else:
-                if score < best_score:
-                    best_score = score
-                    best_move = move
-                beta = min(beta, best_score)
-
-            if beta <= alpha:
-                break
-
-        return best_move
-
-    def minimax(self, board, player, depth, alpha, beta, is_maximizing):
+    def alpha_beta_pruning(self, board, player, depth, alpha, beta, is_maximizing):
         if depth == 0:
             return self.calculatePlayerScore(1) - self.calculatePlayerScore(2)
 
         if is_maximizing:
-            max_eval = float('-inf')
+            best_score = float('-inf')
+            best_move = None
             valid_moves = self.getAllValidMoves(board, player)
 
             for move in valid_moves:
                 new_board = Board()
                 new_board.GameBoard = [row[:] for row in board.GameBoard]  # Copy the game board
                 new_board.make_move(move[0], move[1], player)
-                eval = self.minimax(new_board, 3 - player, depth - 1, alpha, beta, False)
-                max_eval = max(max_eval, eval)
-                alpha = max(alpha, eval)
+                score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, False)
+                if score > best_score:
+                    best_score = score
+                    best_move = move
+                alpha = max(alpha, best_score)
                 if beta <= alpha:
                     break
 
-            return max_eval
         else:
-            min_eval = float('inf')
+            best_score = float('inf')
+            best_move = None
             valid_moves = self.getAllValidMoves(board, player)
 
             for move in valid_moves:
                 new_board = Board()
                 new_board.GameBoard = [row[:] for row in board.GameBoard]  # Copy the game board
                 new_board.make_move(move[0], move[1], player)
-                eval = self.minimax(new_board, 3 - player, depth - 1, alpha, beta, True)
-                min_eval = min(min_eval, eval)
-                beta = min(beta, eval)
+                score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, True)
+                if score < best_score:
+                    best_score = score
+                    best_move = move
+                beta = min(beta, best_score)
                 if beta <= alpha:
                     break
 
-            return min_eval
+        return best_move
 
     def calculatePlayerScore(self, player):
         score = 0
@@ -304,7 +281,7 @@ class View:
                 depth = (self.difficulty - 1) * 2 + 1
                 alpha = float('-inf')
                 beta = float('inf')
-                best_next_pos = self.game.alpha_beta_pruning(self.board, player, depth, alpha, beta)
+                best_next_pos = self.game.alpha_beta_pruning(self.board, player, depth, alpha, beta, True)
                 print("Computer's move:", best_next_pos)
                 player_choice = best_next_pos
 
