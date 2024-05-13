@@ -164,43 +164,33 @@ class GameController:
 
     def alpha_beta_pruning(self, board, player, depth, alpha, beta, is_maximizing):
         if depth == 0:
-            return self.calculatePlayerScore(1) - self.calculatePlayerScore(2)
+            return None, self.calculatePlayerScore(1) - self.calculatePlayerScore(2)
 
-        if is_maximizing:
-            best_score = float('-inf')
-            best_move = None
-            valid_moves = self.getAllValidMoves(board, player)
+        best_move = None
+        best_score = float('-inf') if is_maximizing else float('inf')
+        valid_moves = self.getAllValidMoves(board, player)
 
-            for move in valid_moves:
-                new_board = Board()
-                new_board.GameBoard = [row[:] for row in board.GameBoard]  # Copy the game board
-                new_board.make_move(move[0], move[1], player)
-                score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, False)
+        for move in valid_moves:
+            new_board = Board()
+            new_board.GameBoard = [row[:] for row in board.GameBoard]
+            new_board.make_move(move[0], move[1], player)
+            _, score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, not is_maximizing)
+
+            if is_maximizing:
                 if score > best_score:
                     best_score = score
                     best_move = move
                 alpha = max(alpha, best_score)
-                if beta <= alpha:
-                    break
-
-        else:
-            best_score = float('inf')
-            best_move = None
-            valid_moves = self.getAllValidMoves(board, player)
-
-            for move in valid_moves:
-                new_board = Board()
-                new_board.GameBoard = [row[:] for row in board.GameBoard]  # Copy the game board
-                new_board.make_move(move[0], move[1], player)
-                score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, True)
+            else:
                 if score < best_score:
                     best_score = score
                     best_move = move
                 beta = min(beta, best_score)
-                if beta <= alpha:
-                    break
 
-        return best_move
+            if beta <= alpha:
+                break
+
+        return best_move, best_score
 
     def calculatePlayerScore(self, player):
         score = 0
@@ -285,9 +275,8 @@ class View:
                 alpha = float('-inf')
                 beta = float('inf')
                 best_next_pos = self.game.alpha_beta_pruning(self.board, player, depth, alpha, beta, True)
-                print("Computer's move:", best_next_pos)
-                player_choice = best_next_pos
-
+                player_choice, _ = best_next_pos
+                print("Computer's move:", player_choice)
             if player_choice:
                 self.board.make_move(player_choice[0], player_choice[1], player)
                 self.game.updateBoard(player, self.board, player_choice)
@@ -304,6 +293,7 @@ class View:
                 return "Computer wins!"
             else:
                 return "draw!"
+
 
 view = View()
 view.run()
