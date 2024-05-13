@@ -263,14 +263,17 @@ class View:
                     continue
                 print("Please choose one from your valid moves: ", valid_moves_human)
                 while True:
-                    row = int(input("Enter row number: "))
-                    col = int(input("Enter column number: "))
-                    if [row, col] in valid_moves_human:
-                        player_choice.append(row)
-                        player_choice.append(col)
-                        break
-                    else:
-                        print("Invalid move, please enter a new one.")
+                    try:
+                        row = int(input("Enter row number: "))
+                        col = int(input("Enter column number: "))
+                        if [row, col] in valid_moves_human:
+                            player_choice.append(row)
+                            player_choice.append(col)
+                            break
+                        else:
+                            print("Invalid move, please enter a new one.")
+                    except ValueError:
+                        print("Invalid input! Please enter integer numbers only for row and column fields.")
 
             else:
                 print("It's Computer's turn!")
