@@ -31,7 +31,7 @@ class GameController:
     def run(self):
         player_name = self.getPlayerName()
         print(f"Welcome, {player_name}!")
-        self.selectDifficulty()  # Prompt the user to select the difficulty level
+        self.selectDifficulty()
         print(
             f"You've selected the difficulty level: {'Easy' if self.difficulty == 1 else 'Medium' if self.difficulty == 2 else 'Hard'}")
         player = 2
@@ -44,7 +44,7 @@ class GameController:
             if not valid_moves_computer and not valid_moves_human:
                 player_score = self.game.calculatePlayerScore(1)
                 computer_score = self.game.calculatePlayerScore(2)
-                result = self.checkWinner(valid_moves_human, valid_moves_computer, player_score, computer_score,
+                result = self.game.checkWinner( player_score, computer_score,
                                           player_name)
                 print(result)
                 break
@@ -83,7 +83,7 @@ class GameController:
                 print("Computer's move:", player_choice)
             if player_choice:
                 self.board.make_move(player_choice[0], player_choice[1], player)
-                self.game.updateBoard(player, self.board, player_choice)
+                self.board.updateBoard(player, self.board, player_choice)
             else:
                 self.board.display()
 
