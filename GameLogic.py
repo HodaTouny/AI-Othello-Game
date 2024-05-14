@@ -93,7 +93,8 @@ class GameLogic:
     # Computer Brain
     def alpha_beta_pruning(self, board, player, depth, alpha, beta, is_maximizing):
         if depth == 0:
-            return None, self.calculatePlayerScore(2)
+            score = self.calculatePlayerScore(player)
+            return None, score
 
         best_move = None
         best_score = float('-inf') if is_maximizing else float('inf')
