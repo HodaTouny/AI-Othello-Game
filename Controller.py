@@ -7,6 +7,8 @@ class GameController:
         self.board = Board()
         self.game = GameLogic(self.board)
         self.difficulty = None
+        self.HumanDisks = 32
+        self.ComputerDisks = 32
 
     def getPlayerName(self):
         name = input("Enter your name: ")
@@ -25,9 +27,6 @@ class GameController:
             else:
                 print("Invalid input! Please enter a valid choice.")
 
-    HumanDisks = 32
-    ComputerDisks = 32
-
     def run(self):
         player_name = self.getPlayerName()
         print(f"Welcome, {player_name}!")
@@ -41,11 +40,11 @@ class GameController:
             valid_moves_human = self.game.getAllValidMoves(self.board, 1)
             valid_moves_computer = self.game.getAllValidMoves(self.board, 2)
 
-            if not valid_moves_computer and not valid_moves_human:
+            if self.HumanDisks == 0 or self.ComputerDisks == 0 or (not valid_moves_computer and not valid_moves_human):
                 player_score = self.game.calculatePlayerScore(1)
                 computer_score = self.game.calculatePlayerScore(2)
-                result = self.game.checkWinner( player_score, computer_score,
-                                          player_name)
+                result = self.game.checkWinner(player_score, computer_score,
+                                               player_name)
                 print(result)
                 break
 
@@ -68,7 +67,7 @@ class GameController:
                             print("Invalid move, please enter a new one.")
                     except ValueError:
                         print("Invalid input! Please enter integer numbers only for row and column fields.")
-
+                self.HumanDisks -= 1
             else:
                 print("It's Computer's turn!")
                 if not valid_moves_computer:
@@ -81,6 +80,7 @@ class GameController:
                 best_next_pos = self.game.alpha_beta_pruning(self.board, player, depth, alpha, beta, True)
                 player_choice, _ = best_next_pos
                 print("Computer's move:", player_choice)
+                self.ComputerDisks -= 1
             if player_choice:
                 self.board.make_move(player_choice[0], player_choice[1], player)
                 self.board.updateBoard(player, self.board, player_choice)
