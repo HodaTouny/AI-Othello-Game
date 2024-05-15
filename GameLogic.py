@@ -92,33 +92,36 @@ class GameLogic:
 
     # Computer Brain
     def alpha_beta_pruning(self, board, player, depth, alpha, beta, is_maximizing):
-        if depth == 0:
+        if depth == 0 or (not self.getAllValidMoves(board,player) and not self.getAllValidMoves(board,3-player)):
             score = self.calculatePlayerScore(player)
             return None, score
 
         best_move = None
         best_score = float('-inf') if is_maximizing else float('inf')
         valid_moves = self.getAllValidMoves(board, player)
+        if not valid_moves:
+            _, score = self.alpha_beta_pruning(board, 3 - player, depth - 1, alpha, beta, not is_maximizing)
+        else:
+            for move in valid_moves:
+                print(move)
+                new_board = Board()
+                new_board.GameBoard = [row[:] for row in board.GameBoard]
+                new_board.make_move(move[0], move[1], player)
+                _, score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, not is_maximizing)
 
-        for move in valid_moves:
-            new_board = Board()
-            new_board.GameBoard = [row[:] for row in board.GameBoard]
-            new_board.make_move(move[0], move[1], player)
-            _, score = self.alpha_beta_pruning(new_board, 3 - player, depth - 1, alpha, beta, not is_maximizing)
+                if is_maximizing:
+                    if score > best_score:
+                        best_score = score
+                        best_move = move
+                    alpha = max(alpha, best_score)
+                else:
+                    if score < best_score:
+                        best_score = score
+                        best_move = move
+                    beta = min(beta, best_score)
 
-            if is_maximizing:
-                if score > best_score:
-                    best_score = score
-                    best_move = move
-                alpha = max(alpha, best_score)
-            else:
-                if score < best_score:
-                    best_score = score
-                    best_move = move
-                beta = min(beta, best_score)
-
-            if beta <= alpha:
-                break
+                if beta <= alpha:
+                    break
             
         return best_move, best_score
 
